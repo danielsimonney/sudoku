@@ -15,7 +15,6 @@ var board=[
 
 var currentHeight=0
 
-
 function printBoard(board) {
   for (let line = 0; line < board.length; line++) {
     if(line % 3 === 0 && line!==0){
@@ -31,10 +30,8 @@ function printBoard(board) {
       }else{
         process.stdout.write(board[line][row] + " ")
       }
-    
+    }
   }
-
-}
 }
 
 
@@ -52,9 +49,6 @@ function sudoku(board,y=0){
         }else{
           board[y][x] = 0
         }
-        
-      }else{
-        // console.log(x)
       }
     }
   }
@@ -95,8 +89,7 @@ const empty_case=(board,y=0)=>{
   }
 return null
 }
-// console.log(empty_case(board))
-// printBoard(board)
+
 sudoku(board)
 printBoard(board)
 const t1 = performance.now();

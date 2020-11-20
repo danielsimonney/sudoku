@@ -35,6 +35,7 @@ function printBoard(board) {
   }
 }
 
+
 function preview(board){
   let emptyCase =[]
   for (let height = 0; height < board.length; height++) {
@@ -44,27 +45,24 @@ function preview(board){
       }
     }
   }
+
+  let toRetCase = null;
+  let minNumberPossibles = 10;
+
   for (const pos of emptyCase) {
     let possibilities = [1,2,3,4,5,6,7,8,9]
 
     for (let i = 0; i < board[0].length; i++) {
       if(board[pos.y][i]!==0){
-        for(var len = possibilities.length -1; len >= 0 ; len--){
-          if(possibilities[len] == board[pos.y][len]){
-              possibilities.splice(len, 1);
-          }
-      }
+        possibilities = possibilities.filter(singlePos => singlePos !== board[pos.y][i])
       }
     }
     for (let i = 0; i < board[0].length; i++) {
       if(board[i][pos.x]!==0 ){
-        for(var len = possibilities.length -1; len >= 0 ; len--){
-          if(possibilities[len] == board[len][pos.x]){
-              possibilities.splice(len, 1);
-          }
-      }
+        possibilities = possibilities.filter(singlePos => singlePos !== board[i][pos.x])
       }
     }
+
     squareX = Math.floor(pos.x/3);
     squareY = Math.floor(pos.y/3);
   
@@ -72,36 +70,42 @@ function preview(board){
       for (let XInSquare = squareX*3; XInSquare < squareX*3+3; XInSquare++) {
         if(board[yInSquare][XInSquare] !== 0){
           if(pos.x != XInSquare && pos.y != yInSquare){
-            for(var len = possibilities.length -1; len >= 0 ; len--){
-              if(possibilities[len] == board[yInSquare][XInSquare]){
-                  possibilities.splice(len, 1);
-              }
-          }
+            possibilities = possibilities.filter(singlePos => singlePos !== board[yInSquare][XInSquare])
           }
         }
       }
     }
     pos.numberPossible = possibilities
+
+    if (possibilities.length < minNumberPossibles){
+      minNumberPossibles = possibilities.length;
+      toRetCase = pos;
+    }
   }
-  return emptyCase;
+
+  return toRetCase;
 }
 
-let emptyArray = preview(board)
 
-
-let sudoku=(board,verifNum)=>{
-  if(verifNum>emptyArray.length -1){
+let sudoku=(board,boxToExplore)=>{
+  if(boxToExplore==null){
     return true
   }else{
-  empty = emptyArray[verifNum];
-    let {y,x,numberPossible} = empty
+    let {y,x,numberPossible} = boxToExplore
     for (let num of numberPossible) {
-      if(valid(board,num,x,y)){
-        board[y][x] = num;
-        if(!sudoku(board,verifNum+1)){
+      board[y][x] = num;
+      boxToContinueExploration = preview(board)
+      if (boxToContinueExploration === null){
+        return true;
+      }
+      if (boxToContinueExploration.numberPossible.length === 0){
+        board[y][x] = 0;
+      }else{
+        const reachEnd = sudoku(board,boxToContinueExploration);
+        if(!reachEnd){
           board[y][x] = 0;
-        }else{
-          return true
+        }else {
+          return true;
         }
       }
     }
@@ -132,7 +136,21 @@ function valid(board,insertNumber,x,y){
 }
 
 
-sudoku(board,0)
+sudoku(board,preview(board))
 printBoard(board)
+// const testBoard = [
+//   [3, 3, 1, 1, 1, 1, 1, 1, 1],
+//   [2, 2, 1, 3, 3, 3, 3, 8, 5],
+//   [4, 4, 1, 2, 2, 2, 2, 2, 2],
+//   [1, 2, 3, 5, 4, 7, 4, 4, 4],
+//   [1, 2, 4, 2, 1, 3, 1, 3, 3],
+//   [1, 9, 0, 2, 1, 3, 2, 2, 2],
+//   [5, 1, 2, 2, 5, 3, 3, 7, 3],
+//   [3, 1, 2, 2, 1, 1, 1, 1, 1],
+//   [3, 1, 2, 2, 4, 3, 2, 2, 9],
+// ];
+
+// console.log(preview(testBoard))
 const t1 = performance.now();
 console.log(`time check :${t1 - t0} ms.`);
+
