@@ -31,30 +31,78 @@ function printBoard(board) {
       }else{
         process.stdout.write(board[line][row] + " ")
       }
-    
+    }
   }
-
-}
 }
 
+function preview(board){
+  let emptyCase =[]
+  for (let height = 0; height < board.length; height++) {
+    for (let x = 0; x < board[0].length; x++) {     
+      if(board[height][x]===0){
+        emptyCase.push({y:height,x:x})
+      }
+    }
+  }
+  for (const pos of emptyCase) {
+    let possibilities = [1,2,3,4,5,6,7,8,9]
 
-function sudoku(board,y=0){
-  empty = empty_case(board,y);
-  if (empty===null)
-    return true
-  else{
-    let {x,y} = empty
-    for (let digit = 1; digit < 10; digit++) {
-      if(valid(board,digit,x,y)){
-        board[y][x] = digit;
-        if(sudoku(board,y)===true){
-          return true
-        }else{
-          board[y][x] = 0
+    for (let i = 0; i < board[0].length; i++) {
+      if(board[pos.y][i]!==0){
+        for(var len = possibilities.length -1; len >= 0 ; len--){
+          if(possibilities[len] == board[pos.y][len]){
+              possibilities.splice(len, 1);
+          }
+      }
+      }
+    }
+    for (let i = 0; i < board[0].length; i++) {
+      if(board[i][pos.x]!==0 ){
+        for(var len = possibilities.length -1; len >= 0 ; len--){
+          if(possibilities[len] == board[len][pos.x]){
+              possibilities.splice(len, 1);
+          }
+      }
+      }
+    }
+    squareX = Math.floor(pos.x/3);
+    squareY = Math.floor(pos.y/3);
+  
+    for (let  yInSquare = squareY*3; yInSquare < squareY*3+3; yInSquare++) {
+      for (let XInSquare = squareX*3; XInSquare < squareX*3+3; XInSquare++) {
+        if(board[yInSquare][XInSquare] !== 0){
+          if(pos.x != XInSquare && pos.y != yInSquare){
+            for(var len = possibilities.length -1; len >= 0 ; len--){
+              if(possibilities[len] == board[yInSquare][XInSquare]){
+                  possibilities.splice(len, 1);
+              }
+          }
+          }
         }
-        
-      }else{
-        // console.log(x)
+      }
+    }
+    pos.numberPossible = possibilities
+  }
+  return emptyCase;
+}
+
+let emptyArray = preview(board)
+
+
+let sudoku=(board,verifNum)=>{
+  if(verifNum>emptyArray.length -1){
+    return true
+  }else{
+  empty = emptyArray[verifNum];
+    let {y,x,numberPossible} = empty
+    for (let num of numberPossible) {
+      if(valid(board,num,x,y)){
+        board[y][x] = num;
+        if(!sudoku(board,verifNum+1)){
+          board[y][x] = 0;
+        }else{
+          return true
+        }
       }
     }
   }
@@ -70,6 +118,7 @@ function valid(board,insertNumber,x,y){
   }
   squareX = Math.floor(x/3);
   squareY = Math.floor(y/3);
+
   for (let  yInSquare = squareY*3; yInSquare < squareY*3+3; yInSquare++) {
     for (let XInSquare = squareX*3; XInSquare < squareX*3+3; XInSquare++) {
       if(board[yInSquare][XInSquare] === insertNumber){
@@ -82,22 +131,8 @@ function valid(board,insertNumber,x,y){
   return true
 }
 
-const empty_case=(board,y=0)=>{
-  if(y!=currentHeight){
-    currentHeight=y
-  }
-  for (let height = currentHeight; height < board.length; height++) {
-    for (let x = 0; x < board[0].length; x++) {     
-      if(board[height][x]===0){
-        return({y:height,x:x})
-      }
-    }
-  }
-return null
-}
-// console.log(empty_case(board))
-// printBoard(board)
-sudoku(board)
+
+sudoku(board,0)
 printBoard(board)
 const t1 = performance.now();
 console.log(`time check :${t1 - t0} ms.`);
