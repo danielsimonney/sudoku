@@ -11,7 +11,9 @@ var board=[
   [5, 0, 0, 0, 0, 0, 0, 7, 3],
   [0, 0, 2, 0, 1, 0, 0, 0, 0],
   [0, 0, 0, 0, 4, 0, 0, 0, 9],
-]
+];
+
+var currentHeight=0
 
 
 function printBoard(board) {
@@ -36,8 +38,8 @@ function printBoard(board) {
 }
 
 
-function sudoku(board){
-  empty = empty_case(board);
+function sudoku(board,y=0){
+  empty = empty_case(board,y);
   if (empty===null)
     return true
   else{
@@ -45,11 +47,15 @@ function sudoku(board){
     for (let digit = 1; digit < 10; digit++) {
       if(valid(board,digit,x,y)){
         board[y][x] = digit;
-        if(sudoku(board)===true){
+        if(sudoku(board,y)===true){
           return true
+        }else{
+          board[y][x] = 0
         }
-        board[y][x] = 0
-      } 
+        
+      }else{
+        // console.log(x)
+      }
     }
   }
   return false
@@ -76,11 +82,14 @@ function valid(board,insertNumber,x,y){
   return true
 }
 
-function empty_case(board){
-  for (let y = 0; y < board.length; y++) {
+const empty_case=(board,y=0)=>{
+  if(y!=currentHeight){
+    currentHeight=y
+  }
+  for (let height = currentHeight; height < board.length; height++) {
     for (let x = 0; x < board[0].length; x++) {     
-      if(board[y][x]===0){
-        return({y:y,x:x})
+      if(board[height][x]===0){
+        return({y:height,x:x})
       }
     }
   }
