@@ -2,15 +2,15 @@ const { performance } = require('perf_hooks');
 
 const t0 = performance.now();
 var board=[
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 3, 0, 8, 5],
-  [0, 0, 1, 0, 2, 0, 0, 0, 0],
-  [0, 0, 0, 5, 0, 7, 0, 0, 0],
-  [0, 0, 4, 0, 0, 0, 1, 0, 0],
-  [0, 9, 0, 0, 0, 0, 0, 0, 0],
-  [5, 0, 0, 0, 0, 0, 0, 7, 3],
-  [0, 0, 2, 0, 1, 0, 0, 0, 0],
-  [0, 0, 0, 0, 4, 0, 0, 0, 9],
+  [0, 0, 5, 3, 0, 0, 0, 0, 0],
+            [8, 0, 0, 0, 0, 0, 0, 2, 0],
+            [0, 7, 0, 0, 1, 0, 5, 0, 0],
+            [4, 0, 0, 0, 0, 5, 3, 0, 0],
+            [0, 1, 0, 0, 7, 0, 0, 0, 6],
+            [0, 0, 3, 2, 0, 0, 0, 8, 0],
+            [0, 6, 0, 5, 0, 0, 0, 0, 9],
+            [0, 0, 4, 0, 0, 0, 0, 3, 0],
+            [0, 0, 0, 0, 0, 9, 7, 0, 0]
 ];
 
 var currentHeight=0
@@ -98,16 +98,12 @@ let sudoku=(board,boxToExplore)=>{
       if (boxToContinueExploration === null){
         return true;
       }
-      if (boxToContinueExploration.numberPossible.length === 0){
-        board[y][x] = 0;
-      }else{
         const reachEnd = sudoku(board,boxToContinueExploration);
         if(!reachEnd){
           board[y][x] = 0;
         }else {
           return true;
         }
-      }
     }
   }
   return false
@@ -138,19 +134,6 @@ function valid(board,insertNumber,x,y){
 
 sudoku(board,preview(board))
 printBoard(board)
-// const testBoard = [
-//   [3, 3, 1, 1, 1, 1, 1, 1, 1],
-//   [2, 2, 1, 3, 3, 3, 3, 8, 5],
-//   [4, 4, 1, 2, 2, 2, 2, 2, 2],
-//   [1, 2, 3, 5, 4, 7, 4, 4, 4],
-//   [1, 2, 4, 2, 1, 3, 1, 3, 3],
-//   [1, 9, 0, 2, 1, 3, 2, 2, 2],
-//   [5, 1, 2, 2, 5, 3, 3, 7, 3],
-//   [3, 1, 2, 2, 1, 1, 1, 1, 1],
-//   [3, 1, 2, 2, 4, 3, 2, 2, 9],
-// ];
-
-// console.log(preview(testBoard))
 const t1 = performance.now();
 console.log(`time check :${t1 - t0} ms.`);
 
